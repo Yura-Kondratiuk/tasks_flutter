@@ -1,29 +1,41 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:intl/intl.dart';
+import 'package:tasks_flutter/models/task.dart';
+import 'package:tasks_flutter/utils/database_helper.dart';
 
 class TaskDetail extends StatefulWidget {
-  String appBarTitle;
+  final String appBarTitle;
+  final Task task;
 
-  TaskDetail(this.appBarTitle, {super.key});
+  const TaskDetail(this.task, this.appBarTitle, {super.key});
 
   @override
   State<StatefulWidget> createState() {
     // ignore: no_logic_in_create_state
-    return TaskDetailState(appBarTitle);
+    return TaskDetailState(task, appBarTitle);
   }
 }
 
 class TaskDetailState extends State<TaskDetail> {
   static final _priorities = ['High', 'Low'];
 
+  DatabaseHelper helper = DatabaseHelper();
+
   String appBarTitle;
+  Task task;
 
   TextEditingController titleController = TextEditingController();
-  TextEditingController detailsController = TextEditingController();
+  TextEditingController detailController = TextEditingController();
 
-  TaskDetailState(this.appBarTitle);
+  TaskDetailState(this.task, this.appBarTitle);
 
   @override
   Widget build(BuildContext context) {
+    titleController.text = task.title;
+    detailController.text = task.detail;
+
     return WillPopScope(
         onWillPop: () {
           moveToLastScreen();
@@ -51,10 +63,11 @@ class TaskDetailState extends State<TaskDetail> {
                         child: Text(dropDownStringItem),
                       );
                     }).toList(),
-                    value: 'Low',
+                    value: getPriorityAsString(task.priority),
                     onChanged: (valueSelectedByUser) {
                       setState(() {
                         debugPrint('User selected $valueSelectedByUser');
+                        updatePriorityAsInt(valueSelectedByUser!);
                       });
                     },
                   ),
@@ -64,7 +77,8 @@ class TaskDetailState extends State<TaskDetail> {
                   child: TextField(
                     controller: titleController,
                     onChanged: (value) {
-                      debugPrint(' Text field some changed ');
+                      debugPrint(' Text_field Task some changed ');
+                      updateTitle();
                     },
                     decoration: InputDecoration(
                         labelText: 'Title',
@@ -75,9 +89,10 @@ class TaskDetailState extends State<TaskDetail> {
                 Padding(
                   padding: const EdgeInsets.only(top: 15, bottom: 15),
                   child: TextField(
-                    controller: detailsController,
+                    controller: detailController,
                     onChanged: (value) {
-                      debugPrint(' Text field some changed ');
+                      debugPrint(' Text_field Detail some changed ');
+                      updateDetail();
                     },
                     decoration: InputDecoration(
                         labelText: 'Details',
@@ -97,6 +112,7 @@ class TaskDetailState extends State<TaskDetail> {
                           onPressed: () {
                             setState(() {
                               debugPrint('Save clicked');
+                              _save();
                             });
                           },
                           child: const Text(
@@ -114,6 +130,7 @@ class TaskDetailState extends State<TaskDetail> {
                             onPressed: () {
                               setState(() {
                                 debugPrint('Delete clicked');
+                                _delete();
                               });
                             },
                             child: const Text(
@@ -131,6 +148,81 @@ class TaskDetailState extends State<TaskDetail> {
   }
 
   void moveToLastScreen() {
-    Navigator.pop(context);
+    Navigator.pop(context,true);
+  }
+
+  void updatePriorityAsInt(String value) {
+    switch (value) {
+      case 'High':
+        task.priority = 1;
+        break;
+      case 'Low':
+        task.priority = 2;
+        break;
+    }
+  }
+
+  String getPriorityAsString(int value) {
+    String priority = '';
+    switch (value) {
+      case 1:
+        priority = _priorities[0];
+        break;
+      case 2:
+        priority = _priorities[1];
+        break;
+    }
+    return priority;
+  }
+
+  void updateTitle() {
+    task.title = titleController.text;
+  }
+
+  void updateDetail() {
+    task.detail = detailController.text;
+  }
+
+  void _save() async {
+    moveToLastScreen();
+    task.date = DateFormat.yMMMd().add_Hms().format(DateTime.now());
+
+    int result;
+    if (task.id != null) {
+      result = await helper.updateTask(task);
+    } else {
+      result = await helper.insertTask(task);
+    }
+    if (result != 0) {
+      _showAlertDialog('Status', 'Task saved');
+    } else {
+      _showAlertDialog('Status', 'Problem saved Task');
+    }
+  }
+
+  void _delete() async {
+    moveToLastScreen();
+
+    if (task.id == null) {
+      _showAlertDialog('Status', 'No Task was deleted');
+      return;
+    }
+    int result = await helper.deleteTask(task.id!);
+    if (result != 0) {
+      _showAlertDialog('Status', 'Task delete');
+    }
+    else {
+      _showAlertDialog('Status', 'Error Occurred while Deleting Task');
+    }
+  }
+
+  void _showAlertDialog(String title, String message) {
+    AlertDialog alertDialog = AlertDialog(
+      title: Text(title),
+      content: Text(message),
+    );
+    showDialog(context: context, builder: (_) => alertDialog);
   }
 }
+
+
