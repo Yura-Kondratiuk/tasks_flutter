@@ -1,6 +1,6 @@
 import 'dart:async';
+
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
 import 'package:tasks_flutter/models/task.dart';
 import 'package:tasks_flutter/utils/database_helper.dart';
@@ -148,7 +148,7 @@ class TaskDetailState extends State<TaskDetail> {
   }
 
   void moveToLastScreen() {
-    Navigator.pop(context,true);
+    Navigator.pop(context, true);
   }
 
   void updatePriorityAsInt(String value) {
@@ -210,8 +210,7 @@ class TaskDetailState extends State<TaskDetail> {
     int result = await helper.deleteTask(task.id!);
     if (result != 0) {
       _showAlertDialog('Status', 'Task delete');
-    }
-    else {
+    } else {
       _showAlertDialog('Status', 'Error Occurred while Deleting Task');
     }
   }
@@ -224,5 +223,3 @@ class TaskDetailState extends State<TaskDetail> {
     showDialog(context: context, builder: (_) => alertDialog);
   }
 }
-
-
