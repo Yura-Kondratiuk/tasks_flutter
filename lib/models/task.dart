@@ -41,7 +41,7 @@ class Task {
       if(id != null){
         map['id'] =_id;}
       map['title'] = _title;
-      map['description'] = _detail;
+      map['detail'] = _detail;
       map['priority'] = _priority;
       map['date'] = _date;
 
@@ -51,7 +51,7 @@ class Task {
     Task.fromMapObject(Map<String,dynamic> map) {
     _id = map['id'];
     _title = map['title'];
-    _detail = map['description'];
+    _detail = map['detail'];
     _priority = map['priority'];
     _date = map['date'];
 

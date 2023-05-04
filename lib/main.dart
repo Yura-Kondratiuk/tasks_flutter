@@ -12,7 +12,7 @@ class MyApp extends StatelessWidget {
       title: 'Tasks',
       debugShowCheckedModeBanner: false,
       theme: ThemeData(primarySwatch: Colors.indigo),
-      home: const TasksList(),
+      home:  const TasksList(),
     );
   }
 }
