@@ -1,12 +1,13 @@
-import 'package:flutter/material.dart';
-import 'package:tasks_flutter/screens/task_detail.dart';
-import 'package:tasks_flutter/models/task.dart';
-import 'package:tasks_flutter/utils/database_helper.dart';
-import 'package:sqflite/sqflite.dart';
 import 'dart:async';
 
+import 'package:flutter/material.dart';
+import 'package:sqflite/sqflite.dart';
+import 'package:tasks_flutter/models/task.dart';
+import 'package:tasks_flutter/screens/task_detail.dart';
+import 'package:tasks_flutter/utils/database_helper.dart';
+
 class TasksList extends StatefulWidget {
-   const TasksList({Key? key}) : super(key: key);
+  const TasksList({Key? key}) : super(key: key);
 
   @override
   State<TasksList> createState() => _TasksListState();
@@ -19,11 +20,10 @@ class _TasksListState extends State<TasksList> {
 
   @override
   Widget build(BuildContext context) {
-
-   if (taskList == null)  {
-     taskList = <Task>[];
-     updateListView();
-   }
+    if (taskList == null) {
+      taskList = <Task>[];
+      updateListView();
+    }
 
     return Scaffold(
       appBar: AppBar(
@@ -33,7 +33,7 @@ class _TasksListState extends State<TasksList> {
       floatingActionButton: FloatingActionButton(
         onPressed: () {
           debugPrint(' FAB clicked');
-          navigateToDetail(Task.withoutId('','',2,''),'Add task');
+          navigateToDetail(Task.withoutId('', '', 2, ''), 'Add task');
         },
         tooltip: 'Add Task',
         child: const Icon(Icons.add_task_sharp),
@@ -49,24 +49,24 @@ class _TasksListState extends State<TasksList> {
           color: Colors.yellow[200],
           elevation: 2.0,
           child: ListTile(
-            leading:  CircleAvatar(
+            leading: CircleAvatar(
               backgroundColor: getPriorityColor(taskList[position].priority),
               child: getPriorityIcon(taskList[position].priority),
             ),
-            title:  Text(taskList[position].title),
-            subtitle:  Text(taskList[position].date),
-            trailing:GestureDetector(
+            title: Text(taskList[position].title),
+            subtitle: Text(taskList[position].date),
+            trailing: GestureDetector(
               onTap: () {
                 _delete(taskList[position]);
               },
-              child:  const Icon(
+              child: const Icon(
                 Icons.delete,
                 color: Colors.blueGrey,
               ),
             ),
             onTap: () {
               debugPrint('List tapped');
-              navigateToDetail(taskList[position],'Edit task');
+              navigateToDetail(taskList[position], 'Edit task');
             },
           ),
         );
@@ -103,31 +103,32 @@ class _TasksListState extends State<TasksList> {
       updateListView();
     }
   }
-  void _showSnackBar (String message ) {
+
+  void _showSnackBar(String message) {
     final snackBar = SnackBar(content: Text(message));
     ScaffoldMessenger.of(context).showSnackBar(snackBar);
   }
 
-
-  void navigateToDetail(Task task,String title) async {
-  bool result = await Navigator.push(context, MaterialPageRoute(builder: (context) {
-      return TaskDetail(task ,title);
+  void navigateToDetail(Task task, String title) async {
+    bool result =
+        await Navigator.push(context, MaterialPageRoute(builder: (context) {
+      return TaskDetail(task, title);
     }));
-  if (result == true) {
-    updateListView();
+    if (result == true) {
+      updateListView();
+    }
   }
-  }
+
   void updateListView() {
     final Future<Database> dbFuture = databaseHelper.initializeDatabase();
     dbFuture.then((database) {
-
       Future<List<Task>> taskListFuture = databaseHelper.getTaskList();
       taskListFuture.then((taskList) {
         setState(() {
-          this.taskList =taskList;
+          this.taskList = taskList;
           count = taskList.length;
         });
       });
-    } );
+    });
   }
 }
