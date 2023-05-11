@@ -43,6 +43,7 @@ class _TasksListState extends State<TasksList> {
 
   ListView getListView() {
     return ListView.builder(
+      padding: const EdgeInsets.only(top:5),
       itemCount: count,
       itemBuilder: (BuildContext context, int position) {
         return Card(
@@ -77,7 +78,7 @@ class _TasksListState extends State<TasksList> {
   Color getPriorityColor(int priority) {
     switch (priority) {
       case 1:
-        return Colors.red;
+        return Colors.white38;
       case 2:
         return Colors.yellow;
       default:
@@ -88,9 +89,9 @@ class _TasksListState extends State<TasksList> {
   Icon getPriorityIcon(int priority) {
     switch (priority) {
       case 1:
-        return const Icon(Icons.play_arrow);
+        return const Icon(Icons.local_fire_department,color: Colors.red);
       case 2:
-        return const Icon(Icons.keyboard_arrow_right);
+        return const Icon(Icons.local_fire_department_sharp,color: Colors.green,);
       default:
         return const Icon(Icons.keyboard_arrow_right);
     }
