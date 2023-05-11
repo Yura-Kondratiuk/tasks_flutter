@@ -1,5 +1,4 @@
 import 'dart:async';
-
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:tasks_flutter/models/task.dart';
@@ -185,7 +184,7 @@ class TaskDetailState extends State<TaskDetail> {
 
   void _save() async {
     moveToLastScreen();
-    task.date = DateFormat.yMMMd().add_Hms().format(DateTime.now());
+    task.date = DateFormat.MMMd().add_Hm().format(DateTime.now());
 
     int result;
     if (task.id != null) {
